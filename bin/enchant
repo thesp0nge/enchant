@@ -1,3 +1,70 @@
 #!/usr/bin/env ruby
+require 'rubygems'
+require 'lib/Enchant'
+require 'rainbow'
+require 'progressbar'
+require 'getoptlong'
+require 'rdoc/usage'
 
-abort "you need to write me"
+opts = GetoptLong.new(
+  [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
+  [ '--version', '-v', GetoptLong::NO_ARGUMENT ],
+  [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ]
+)
+
+wordlist = 'basic.txt'
+opts.each do |opt, arg|
+  case opt
+        when '--help'
+          RDoc::usage
+          exit 0
+        when '--version'
+          puts Enchant.version
+          exit 0
+        when '--wordlist'
+          if arg == ''
+            wordlist = 'basic.txt'
+          else
+            wordlist = arg
+          end
+      end
+    end
+
+if ARGV.length != 1
+  puts "Missing url argument (try --help)"
+  exit 0
+end
+
+url = ARGV.shift
+
+
+e = Enchant.new(url)
+puts e
+puts "Sending probe to #{url}"
+e.list(wordlist)
+list = e.fuzz()
+if list == nil
+  puts "Enchant is giving up since no wordlist file is available"
+  exit -1
+end
+
+pbar = ProgressBar.new("urls", list.size)
+
+list.each {|x|
+  pbar.inc
+ code = e.get("/".concat(x).chomp)
+ unless code != 404
+   case code
+     # just hide 404s... when "404" then puts "Status is #{code} for /#{x.chomp}".foreground(:yellow)
+    when "200" then puts "Status is #{code} for /#{x.chomp}".foreground(:green)
+    when "500" then puts "Status is #{code} for /#{x.chomp}".foreground(:red)
+    else 
+      puts "Status is #{code} for /#{x.chomp}"
+    end
+  end
+}
+pbar.finish
+# puts e.server
+# 
+
+

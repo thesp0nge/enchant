@@ -1,12 +1,14 @@
-# -*- ruby -*-
-
-require 'rubygems'
-require 'hoe'
-
-Hoe.spec 'enchant' do
-  # developer('FIX', 'FIX@example.com')
-
-  # self.rubyforge_name = 'enchantx' # if different than 'enchant'
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gemspec|
+    gemspec.name = "enchant"
+    gemspec.summary = "Your magical web application fuzzer"
+    gemspec.description = "Enchant is tool aimed to discover web application directory and pages by fuzzing the requests using a dictionary approach"
+    gemspec.email = "paolo@armoredcode.com"
+    gemspec.homepage = "http://github.com/thesp0nge/enchant"
+    gemspec.authors = ["Paolo Perego"]
+    gemspec.add_dependency('ruby-progressbar')
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: gem install jeweler"
 end
-
-# vim: syntax=ruby
