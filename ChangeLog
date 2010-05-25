@@ -1,3 +1,14 @@
+-- 0.2.0 -- 
+
+2010-05-21 Paolo Perego <thesp0nge@gmail.com>
+* bin/enchant (none): adding -d, --directory to specify enchant behavior. 
+
+-- 0.1.0 -- 
+2010-05-20 Paolo Perego <thesp0nge@gmail.com>
+
+* lib/enchant.rb (none): implemented list(), get() and ping() methods
+* bin/enchant (none): command line argument handling and first action... fuzzing against web app directories
+
 2010-05-18 Paolo Perego <thesp0nge@gmail.com>
 
 * lib/enchant.rb (none): first typos
