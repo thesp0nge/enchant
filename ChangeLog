@@ -1,4 +1,8 @@
--- 0.2.0 -- 
+-- 0.3.0 -- 
+
+2010-06-24 Paolo Perego <thesp0nge@gmail.com>
+* bin/enchant (none): adding -f, --flood to perform HTTP HEAD flooding requests
+
 
 2010-05-21 Paolo Perego <thesp0nge@gmail.com>
 * bin/enchant (none): adding -d, --directory to specify enchant behavior. 

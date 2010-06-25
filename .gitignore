@@ -1,1 +1,4 @@
+.autotest
 doc/*
+pkg/
+

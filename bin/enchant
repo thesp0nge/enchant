@@ -9,10 +9,13 @@ require 'rdoc/usage'
 opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
   [ '--version', '-v', GetoptLong::NO_ARGUMENT ],
+  [ '--flood', '-f', GetoptLong::REQUIRED_ARGUMENT],
   [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ]
 )
 
+flood = -1
 wordlist = 'basic.txt'
+
 opts.each do |opt, arg|
   case opt
         when '--help'
@@ -21,6 +24,12 @@ opts.each do |opt, arg|
         when '--version'
           puts Enchant.version
           exit 0
+        when '--flood'
+          flood = arg.to_i
+          if flood <= 0
+            puts 'can\'t flood negative requests'
+            exit 1
+          end
         when '--wordlist'
           if arg == ''
             wordlist = 'basic.txt'
@@ -30,16 +39,34 @@ opts.each do |opt, arg|
       end
     end
 
+
 if ARGV.length != 1
   puts "Missing url argument (try --help)"
   exit 0
 end
 
 url = ARGV.shift
-
-
 e = Enchant.new(url)
+
 puts e
+
+if flood != 0
+  puts "Flooding #{url} with #{flood} requests"
+  puts e.host
+  puts e.port
+  if (! e.is_sane?)
+    puts "Insane"
+    exit 0
+  end
+  
+  pbar = ProgressBar.new("reqs", flood)
+  (1..flood).each do |i|
+    pbar.inc
+    e.get('/')
+  end
+  exit 0
+end
+ 
 puts "Sending probe to #{url}"
 e.list(wordlist)
 list = e.fuzz()

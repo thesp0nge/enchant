@@ -6,12 +6,22 @@ require 'uri'
 class Enchant
   attr_reader :host, :port, :server, :code
   
-  VERSION = '0.1.0'
+  VERSION = '0.3.0'
   
   def initialize(url)
     tmp = URI.parse(url)
     @host = tmp.host
     @port = tmp.port
+    
+    if @host == nil || @port == nil
+      @sane = nil
+    else 
+      @sane = 1
+    end
+   end
+  
+  def is_sane?
+    @sane
   end
   
   def list(wordlist) 
@@ -52,6 +62,7 @@ class Enchant
           @server=val
         end 
       }
+
     }
   end
   
@@ -60,6 +71,7 @@ class Enchant
   end
   
   def self.version()
-    "Enchant v"+VERSION
+    @version = File.exist?('VERSION') ? File.read('VERSION') : VERSION
+    "Enchant v"+@version
   end
 end
