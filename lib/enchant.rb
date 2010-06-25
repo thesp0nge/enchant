@@ -4,21 +4,29 @@ require 'uri'
 
 
 class Enchant
-  attr_reader :host, :port, :server, :code
+  attr_reader :server, :code
+  attr_accessor :host, :port
   
   VERSION = '0.3.0'
   
-  def initialize(url)
-    tmp = URI.parse(url)
-    @host = tmp.host
-    @port = tmp.port
+  def initialize(*urls)
+    url = urls.pop || ""
     
-    if @host == nil || @port == nil
-      @sane = nil
-    else 
+    
+    if url != "" 
+      tmp = URI.parse(url)
+      @host = tmp.host
+      @port = tmp.port
+    
+      if @host == nil || @port == nil
+        @sane = nil
+      else 
+        @sane = 1
+      end
+    else
       @sane = 1
     end
-   end
+  end
   
   def is_sane?
     @sane

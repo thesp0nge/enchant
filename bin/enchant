@@ -10,11 +10,15 @@ opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
   [ '--version', '-v', GetoptLong::NO_ARGUMENT ],
   [ '--flood', '-f', GetoptLong::REQUIRED_ARGUMENT],
-  [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ]
+  [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ],
+  [ '--host', '-H', GetoptLong::REQUIRED_ARGUMENT], 
+  [ '--port', '-p', GetoptLong::REQUIRED_ARGUMENT]
 )
 
 flood = -1
 wordlist = 'basic.txt'
+host = nil
+port = nil
 
 opts.each do |opt, arg|
   case opt
@@ -30,6 +34,10 @@ opts.each do |opt, arg|
             puts 'can\'t flood negative requests'
             exit 1
           end
+        when '--host'
+          host = arg
+        when '--port'
+          port = arg.to_i
         when '--wordlist'
           if arg == ''
             wordlist = 'basic.txt'
@@ -37,33 +45,40 @@ opts.each do |opt, arg|
             wordlist = arg
           end
       end
-    end
-
-
-if ARGV.length != 1
-  puts "Missing url argument (try --help)"
-  exit 0
 end
 
-url = ARGV.shift
-e = Enchant.new(url)
+if host == nil && port == nil
+  if ARGV.length != 1
+    puts "Missing url argument (try --help)"
+    exit 0
+  end
+
+  url = ARGV.shift
+  e = Enchant.new(url)
+
+else
+  e = Enchant.new
+  e.host = host
+  e.port = port
+end
 
 puts e
 
-if flood != 0
-  puts "Flooding #{url} with #{flood} requests"
-  puts e.host
-  puts e.port
+if flood != -1
+  puts "Flooding "+e.host+" with #{flood} requests"
   if (! e.is_sane?)
-    puts "Insane"
-    exit 0
+    puts 'Automatic url parsing failed, please consider providing such information by hand.'
+    exit 1
   end
   
   pbar = ProgressBar.new("reqs", flood)
+  start_time = Time.now
   (1..flood).each do |i|
     pbar.inc
     e.get('/')
   end
+  puts
+  puts "flooed in " + (Time.now - start_time).to_s + "s"
   exit 0
 end
  

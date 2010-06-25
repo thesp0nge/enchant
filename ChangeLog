@@ -1,11 +1,11 @@
 -- 0.3.0 -- 
 
+2010-06-25 Paolo Perego <thesp0nge@gmail.com>
+
+* lib/enchant.rb, bin/enchant (): adding -H, -p option to override URI parsing that checks TLD sanity
+
 2010-06-24 Paolo Perego <thesp0nge@gmail.com>
 * bin/enchant (none): adding -f, --flood to perform HTTP HEAD flooding requests
-
-
-2010-05-21 Paolo Perego <thesp0nge@gmail.com>
-* bin/enchant (none): adding -d, --directory to specify enchant behavior. 
 
 -- 0.1.0 -- 
 2010-05-20 Paolo Perego <thesp0nge@gmail.com>

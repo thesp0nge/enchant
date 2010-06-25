@@ -7,7 +7,8 @@ begin
     gemspec.email = "paolo@armoredcode.com"
     gemspec.homepage = "http://github.com/thesp0nge/enchant"
     gemspec.authors = ["Paolo Perego"]
-    gemspec.add_dependency('ruby-progressbar', 'rainbow')
+    gemspec.add_dependency('ruby-progressbar')
+    gemspec.add_dependency('rainbow')
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
