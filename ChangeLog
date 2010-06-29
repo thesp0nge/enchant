@@ -1,3 +1,8 @@
+-- 0.4.1 -- 
+2010-06-29 Paolo Perego <thesp0nge@gmail.com>
+
+* lib/enchant.rb (is_alive): code is a String. Boolean compare with an Fixnum will always fail
+
 -- 0.4.0 --
 2010-06-29 Paolo Perego <thesp0nge@gmail.com>
 

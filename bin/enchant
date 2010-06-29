@@ -95,7 +95,7 @@ if ping != -1
  
   start_time = Time.now
   e.ping
-  if (e.is_alive?)
+  if e.is_alive?
     puts e.host + " seems to be alive"
   else
     puts e.host + " seems having some trouble ("+e.code+")"

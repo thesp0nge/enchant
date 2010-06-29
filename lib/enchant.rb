@@ -63,7 +63,7 @@ class Enchant
   end
   
   def is_alive?
-    (@code == 200)
+    code.to_i==200
   end
   
   def ping(*)
