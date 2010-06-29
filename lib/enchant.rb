@@ -7,7 +7,7 @@ class Enchant
   attr_reader :server, :code
   attr_accessor :host, :port
   
-  VERSION = '0.3.0'
+  VERSION = '0.4.0'
   
   def initialize(*urls)
     url = urls.pop || ""
@@ -18,7 +18,7 @@ class Enchant
       @host = tmp.host
       @port = tmp.port
     
-      if @host == nil || @port == nil
+      if @host == nil && @port == nil
         @sane = nil
       else 
         @sane = 1
@@ -62,6 +62,10 @@ class Enchant
     end
   end
   
+  def is_alive?
+    (@code == 200)
+  end
+  
   def ping(*)
     Net::HTTP.start(host, port) { |http| 
       response = http.head("/")
@@ -70,6 +74,7 @@ class Enchant
           @server=val
         end 
       }
+      @code = response.code
 
     }
   end

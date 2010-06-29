@@ -9,6 +9,7 @@ require 'rdoc/usage'
 opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
   [ '--version', '-v', GetoptLong::NO_ARGUMENT ],
+  [ '--ping', '-P', GetoptLong::NO_ARGUMENT],
   [ '--flood', '-f', GetoptLong::REQUIRED_ARGUMENT],
   [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ],
   [ '--host', '-H', GetoptLong::REQUIRED_ARGUMENT], 
@@ -16,6 +17,7 @@ opts = GetoptLong.new(
 )
 
 flood = -1
+ping = -1
 wordlist = 'basic.txt'
 host = nil
 port = nil
@@ -34,6 +36,8 @@ opts.each do |opt, arg|
             puts 'can\'t flood negative requests'
             exit 1
           end
+        when '--ping'
+          ping = 0
         when '--host'
           host = arg
         when '--port'
@@ -65,11 +69,11 @@ end
 puts e
 
 if flood != -1
-  puts "Flooding "+e.host+" with #{flood} requests"
   if (! e.is_sane?)
     puts 'Automatic url parsing failed, please consider providing such information by hand.'
     exit 1
   end
+  puts "Flooding "+e.host+" with #{flood} requests"
   
   pbar = ProgressBar.new("reqs", flood)
   start_time = Time.now
@@ -81,7 +85,25 @@ if flood != -1
   puts "flooed in " + (Time.now - start_time).to_s + "s"
   exit 0
 end
+
+if ping != -1
+  if (! e.is_sane?)
+    puts 'Automatic url parsing failed, please consider providing such information by hand.'
+    exit 1
+  end
+  puts "Pinging "+e.host+" onto port " + e.port.to_s
  
+  start_time = Time.now
+  e.ping
+  if (e.is_alive?)
+    puts e.host + " seems to be alive"
+  else
+    puts e.host + " seems having some trouble ("+e.code+")"
+  end
+  puts
+  puts "pinged in " + (Time.now - start_time).to_s + "s"
+  exit 0
+end
 puts "Sending probe to #{url}"
 e.list(wordlist)
 list = e.fuzz()
