@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{enchant}
-  s.version = "0.3.0"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paolo Perego"]
-  s.date = %q{2010-06-25}
+  s.date = %q{2010-06-29}
   s.default_executable = %q{enchant}
   s.description = %q{Enchant is tool aimed to discover web application directory and pages by fuzzing the requests using a dictionary approach}
   s.email = %q{paolo@armoredcode.com}
