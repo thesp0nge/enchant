@@ -47,6 +47,14 @@ Or you can also use the wordlist you love most
 	bin/enchant -w mylist.txt www.some.org
 </pre>
 
+h3. Ping
+
+Starting from version 0.4.0 you can also ping the remote web server to see if it's alive (return code 200) or not.
+
+<pre>
+	bin/enchant -P http://www.some.org
+</pre>
+
 h2. Install
 
 <pre>sudo gem install enchant</pre>
