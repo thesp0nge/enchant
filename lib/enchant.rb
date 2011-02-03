@@ -1,11 +1,14 @@
 require 'rubygems'
 require 'net/http'
 require 'uri'
+require 'ping'
+require 'Net/ping'
+include Net
 
 
 class Enchant
   attr_reader :server, :code
-  attr_accessor :host, :port
+  attr_accessor :host, :port, :domain
   
   VERSION = '0.4.0'
   
@@ -60,23 +63,27 @@ class Enchant
       puts #{$!}
       @code=-1
     end
+    @code
   end
   
   def is_alive?
     code.to_i==200
   end
   
-  def ping(*)
-    Net::HTTP.start(host, port) { |http| 
-      response = http.head("/")
-      response.each { |key,val| 
-        if "server" == key 
-          @server=val
-        end 
-      }
-      @code = response.code
-
-    }
+  def ping?(host)
+    # TCP pinging
+    if Ping.pingecho(host)
+      return true
+    end
+    #else
+    #  icmp = Net::Ping::ICMP.new(host)
+    #  if icmp.ping?
+    #    return true
+    #  else
+    #    return false
+    #  end
+    #end
+    false
   end
   
   def to_s() 

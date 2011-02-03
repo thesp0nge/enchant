@@ -12,7 +12,8 @@ opts = GetoptLong.new(
   [ '--ping', '-P', GetoptLong::NO_ARGUMENT],
   [ '--flood', '-f', GetoptLong::REQUIRED_ARGUMENT],
   [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ],
-  [ '--host', '-H', GetoptLong::REQUIRED_ARGUMENT], 
+  [ '--host', '-H', GetoptLong::REQUIRED_ARGUMENT],
+  [ '--domain', '-d', GetoptLong::REQUIRED_ARGUMENT],
   [ '--port', '-p', GetoptLong::REQUIRED_ARGUMENT]
 )
 
@@ -21,6 +22,7 @@ ping = -1
 wordlist = 'basic.txt'
 host = nil
 port = nil
+domain = nil
 
 opts.each do |opt, arg|
   case opt
@@ -48,10 +50,12 @@ opts.each do |opt, arg|
           else
             wordlist = arg
           end
+        when '--domain'
+          domain = arg
       end
 end
 
-if host == nil && port == nil
+if host == nil && port == nil && domain == nil
   if ARGV.length != 1
     puts "Missing url argument (try --help)"
     exit 0
@@ -61,9 +65,14 @@ if host == nil && port == nil
   e = Enchant.new(url)
 
 else
-  e = Enchant.new
-  e.host = host
-  e.port = port
+  if domain == nil
+    e = Enchant.new
+    e.host = host
+    e.port = port
+  else
+    e = Enchant.new
+    e.domain = domain
+  end
 end
 
 puts e
@@ -94,7 +103,7 @@ if ping != -1
   puts "Pinging "+e.host+" onto port " + e.port.to_s
  
   start_time = Time.now
-  e.ping
+  e.get("/")
   if e.is_alive?
     puts e.host + " seems to be alive"
   else
@@ -104,6 +113,32 @@ if ping != -1
   puts "pinged in " + (Time.now - start_time).to_s + "s"
   exit 0
 end
+
+if domain != -1
+  if (! e.is_sane?)
+    puts 'Automatic url parsing failed, please consider providing such information by hand.'
+    exit 1
+  end
+  puts "scanning for " + e.domain + " for subdomains"
+  e.list(wordlist)
+  list = e.fuzz
+  
+  if list == nil
+    puts "Enchant is giving up since no wordlist file is available"
+    exit -1
+  end
+  pbar = ProgressBar.new("subdomains", list.size)
+  found=Array.new
+  list.each {|x|
+    pbar.inc
+    if (e.ping?(x.chomp+"."+domain))
+      found.add(x+"."+domain)
+    end
+  }
+  puts found.length+" subdomains found."
+  exit 0
+end
+
 puts "Sending probe to #{url}"
 e.list(wordlist)
 list = e.fuzz()

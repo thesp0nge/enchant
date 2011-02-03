@@ -1,3 +1,7 @@
+2010-07-02 Paolo Perego <thesp0nge@gmail.com>
+
+* lib/enchant.rb (modified_function): start coding subdomain fuzzing (--domain)
+
 -- 0.4.1 -- 
 2010-06-29 Paolo Perego <thesp0nge@gmail.com>
 
