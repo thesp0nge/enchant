@@ -1,4 +1,5 @@
 .autotest
 doc/*
 pkg/
-
+.rvmrc
+*.swp
