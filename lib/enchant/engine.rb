@@ -10,7 +10,6 @@ module Enchant
     def initialize(*urls)
       url = urls.pop || ""
 
-
       if url != "" 
         tmp = URI.parse(url)
         @host = tmp.host

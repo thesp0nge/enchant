@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'enchant'
 require 'rainbow'
+require 'awesome_print'
 require 'progressbar'
 require 'getoptlong'
 
@@ -15,76 +16,66 @@ opts = GetoptLong.new(
   [ '--port', '-p', GetoptLong::REQUIRED_ARGUMENT]
 )
 
-flood = -1
-ping = -1
-wordlist = 'basic.txt'
-host = nil
-port = nil
-domain = nil
+options = { :flood=> -1, :ping=>-1, :wordlist=>'basic.txt', :host=>nil, :port=>80, :domain=>nil }
 
 opts.each do |opt, arg|
   case opt
-        when '--help'
-          puts 'Foo'
-          exit 0
-        when '--version'
-          puts Enchant::Version.version
-          exit 0
-        when '--flood'
-          flood = arg.to_i
-          if flood <= 0
-            puts 'can\'t flood negative requests'
-            exit 1
-          end
-        when '--ping'
-          ping = 0
-        when '--host'
-          host = arg
-        when '--port'
-          port = arg.to_i
-        when '--wordlist'
-          if arg == ''
-            wordlist = 'basic.txt'
-          else
-            wordlist = arg
-          end
-        when '--domain'
-          domain = arg
-      end
+  when '--help'
+    ap "enchant: there is no doc at the moment... sorry."
+    exit 0
+  when '--version'
+    ap "enchant " + Enchant::Version.version[:string]
+    exit 0
+  when '--flood'
+    if arg.to_i <= 0
+      ap "enchant: requests number must be positive"
+      exit 1
+    else
+      options[:flood] = arg.to_i
+    end
+  when '--ping'
+    options[:ping] = 0
+  when '--host'
+    options[:host] = arg
+  when '--port'
+    options[:port] = arg.to_i
+  when '--wordlist'
+    options[:wordlist] = arg
+  when '--domain'
+    options[:domain] = arg
+  end
 end
 
-if host == nil && port == nil && domain == nil
+if options[:host].nil? && options[:domain].nil?
   if ARGV.length != 1
-    puts "Missing url argument (try --help)"
+    ap "enchant: missing url argument (try --help)"
     exit 0
   end
 
   url = ARGV.shift
-  e = Enchant.new(url)
+  e = Enchant::Engine.new(url)
 
 else
-  if domain == nil
-    e = Enchant.new
-    e.host = host
-    e.port = port
+  if options[:domain].nil?
+    e = Enchant::Engine.new
+    e.host = options[:host]
+    e.port = options[:port]
   else
-    e = Enchant.new
-    e.domain = domain
+    e = Enchant::Engine.new
+    e.domain = options[:domain]
   end
 end
 
-puts e
-
-if flood != -1
+if options[:flood] != -1
   if (! e.is_sane?)
     puts 'Automatic url parsing failed, please consider providing such information by hand.'
     exit 1
   end
-  puts "Flooding "+e.host+" with #{flood} requests"
-  
-  pbar = ProgressBar.new("reqs", flood)
+  puts "Flooding "+e.host+" with #{options[:flood]} requests"
+
+  pbar = ProgressBar.new("reqs", options[:flood])
   start_time = Time.now
-  (1..flood).each do |i|
+  (1..options[:flood]).each do |i|
     pbar.inc
     e.get('/')
   end
@@ -93,16 +84,16 @@ if flood != -1
   exit 0
 end
 
-if ping != -1
+if options[:ping] != -1
   if (! e.is_sane?)
     puts 'Automatic url parsing failed, please consider providing such information by hand.'
     exit 1
   end
   puts "Pinging "+e.host+" onto port " + e.port.to_s
- 
+
   start_time = Time.now
   e.get("/")
-  if e.is_alive?
+  if e.up?
     puts e.host + " seems to be alive"
   else
     puts e.host + " seems having some trouble ("+e.code+")"
@@ -112,7 +103,7 @@ if ping != -1
   exit 0
 end
 
-if domain != -1
+if !options[:domain].nil?
   if (! e.is_sane?)
     puts 'Automatic url parsing failed, please consider providing such information by hand.'
     exit 1
@@ -120,7 +111,7 @@ if domain != -1
   puts "scanning for " + e.domain + " for subdomains"
   e.list(wordlist)
   list = e.fuzz
-  
+
   if list == nil
     puts "Enchant is giving up since no wordlist file is available"
     exit -1
@@ -138,7 +129,7 @@ if domain != -1
 end
 
 puts "Sending probe to #{url}"
-e.list(wordlist)
+e.list(options[:wordlist])
 list = e.fuzz()
 if list == nil
   puts "Enchant is giving up since no wordlist file is available"
@@ -149,10 +140,10 @@ pbar = ProgressBar.new("urls", list.size)
 
 list.each {|x|
   pbar.inc
- code = e.get("/".concat(x).chomp)
- unless code != 404
-   case code
-     # just hide 404s... when "404" then puts "Status is #{code} for /#{x.chomp}".foreground(:yellow)
+  code = e.get("/".concat(x).chomp)
+  unless code != 404
+    case code
+      # just hide 404s... when "404" then puts "Status is #{code} for /#{x.chomp}".foreground(:yellow)
     when "200" then puts "Status is #{code} for /#{x.chomp}".foreground(:green)
     when "500" then puts "Status is #{code} for /#{x.chomp}".foreground(:red)
     else 
