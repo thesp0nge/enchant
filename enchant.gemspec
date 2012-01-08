@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "enchant"
-  s.version = ""
+  s.version = "0.99.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paolo Perego"]
