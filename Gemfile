@@ -2,8 +2,7 @@ source "http://rubygems.org"
 
 gem 'rainbow'
 gem 'progressbar'
-gem "awesome_print"
-gem 'rake'
+gem 'httpclient'
 
 group :development do
   gem "rspec", "~> 2.3.0"
