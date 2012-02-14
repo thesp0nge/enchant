@@ -46,7 +46,7 @@ module Enchant
       if File.exists?('../../VERSION')
         numbers = File.read('../../VERSION').strip.split('.').map {|n| n =~ /^[0-9]+$/ ? n.to_i : n}
       else
-        numbers = [0, 0, 0]
+        numbers =[0,0,0]
       end
       @@version = {
         :major => numbers[0],
