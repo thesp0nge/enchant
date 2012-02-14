@@ -31,7 +31,7 @@ Jeweler::Tasks.new do |gem|
   gem.default_executable = 'enchant'
   gem.require_path = 'lib'
   gem.license = "BSD"
-  gem.version = Enchant::Version.version[:string]
+  gem.version = Enchant::Version::STRING
 
   gem.summary = %Q{evaluates web server SSL configuration}
   gem.description = %Q{ciphersurfer is a security tool that evaluates web server SSL configuration}
@@ -58,5 +58,5 @@ YARD::Rake::YardocTask.new
 
 desc "Rebuild VERSION file"
 task :version do
-  File.open('VERSION', 'w') {|f| f.write(Enchant::Version.version[:string])}
+  File.open('VERSION', 'w') {|f| f.write(Enchant::Version::STRING)}
 end
