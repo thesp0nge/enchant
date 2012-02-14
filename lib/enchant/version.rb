@@ -40,7 +40,14 @@ module Enchant
     # @return [{Symbol => String/Fixnum}] The version hash  
     def self.version
       return @@version if defined?(@@version)
-      numbers = File.read('VERSION').strip.split('.').map {|n| n =~ /^[0-9]+$/ ? n.to_i : n}
+      if File.exists?('VERSION')
+        numbers = File.read('VERSION').strip.split('.').map {|n| n =~ /^[0-9]+$/ ? n.to_i : n}
+      end
+      if File.exists?('../../VERSION')
+        numbers = File.read('../../VERSION').strip.split('.').map {|n| n =~ /^[0-9]+$/ ? n.to_i : n}
+      else
+        numbers = [0, 0, 0]
+      end
       @@version = {
         :major => numbers[0],
         :minor => numbers[1],
