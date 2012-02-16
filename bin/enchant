@@ -17,7 +17,7 @@ options = { :verbose=>false, :wordlist=>'basic.txt', :host=>nil, :port=>80, :dom
 opts.each do |opt, arg|
   case opt
   when '--help'
-    Enchant::Enchant.help
+    Enchant::Engine.help
     exit 0
   when '--verbose'
     options[:verbose]=true
@@ -31,7 +31,7 @@ end
 
 if ARGV.length != 1
   puts "missing target".color(:red)
-  Enchant::Enchant.help
+  Enchant::Engine.help
   exit -1
 end
 
