@@ -63,10 +63,11 @@ module Enchant
             refused += 1
             if refused > 5
               pbar.finish
-              puts "received 5 connection refused. #{@host} is down".color(:red)
+              puts "received 5 connection refused. #{@host} went down".color(:red)
               return @urls_open.count 
             else
-              sleep 2
+              puts "[WARNING] connection refused".color(:yellow)
+              sleep 2 * refused
             end
             
           rescue Net::HTTPBadResponse
