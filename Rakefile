@@ -33,9 +33,6 @@ Jeweler::Tasks.new do |gem|
   gem.license = "BSD"
   gem.version = Enchant::Version.version
 
-  gem.summary = %Q{evaluates web server SSL configuration}
-  gem.description = %Q{ciphersurfer is a security tool that evaluates web server SSL configuration}
-  gem.authors = ["Paolo Perego"]
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
