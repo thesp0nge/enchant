@@ -90,6 +90,8 @@ module Enchant
       begin
         Net::HTTP.new(@host, @port).get('/')
         return true
+      rescue Errno::ECONNREFUSED
+        return false
       rescue Errno::ETIMEDOUT
         return false
       end
