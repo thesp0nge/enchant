@@ -46,14 +46,7 @@ port = url.split(':')[1] ||= 80             # more common here
 
 puts "Fuzzing #{host}@#{port}"
 
-e = Enchant::Engine.new(url)
-
-e = Enchant::Engine.new
-e.host = options[:host]
-e.port = options[:port]
-
-    e = Enchant::Engine.new
-    # e.domain = options[:domain]
+e = Enchant::Engine.new(options)
 
 if options[:flood] != -1
   if (! e.is_sane?)
