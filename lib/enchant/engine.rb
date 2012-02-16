@@ -30,7 +30,7 @@ module Enchant
     end
 
     def scan
-      http = Net::HTTP.new(host, port)
+      http = Net::HTTP.new(@host, @port)
       list = get_list
 
       @urls_open={}
