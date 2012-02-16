@@ -36,19 +36,19 @@ module Enchant
         return 0
       end
 
-      @urls_open={}
-      @urls_internal_error={}
-      @urls_private={}
+      @urls_open=[]
+      @urls_internal_error=[]
+      @urls_private=[]
 
       
       pbar = ProgressBar.new("urls", list.size)
       list.each do |path|
         pbar.inc
-        puts "#{path}".color(:yellow)
-        if ! list.start_with? '#'
+        puts "#{path.chop}".color(:yellow)
+        if ! path.start_with? '#'
           begin
-            response = http.get('/'+path)
-            c = response.code
+            response = http.get('/'+path.chop)
+            c = response.code.to_i
             if c == 200
               @urls_open << path
             end
