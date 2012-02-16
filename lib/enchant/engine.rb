@@ -44,7 +44,6 @@ module Enchant
       pbar = ProgressBar.new("urls", list.size)
       list.each do |path|
         pbar.inc
-        puts "#{path.chop}".color(:yellow)
         if ! path.start_with? '#'
           begin
             response = http.get('/'+path.chop)
