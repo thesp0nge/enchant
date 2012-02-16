@@ -1,44 +1,28 @@
 #!/usr/bin/env ruby
 require 'enchant'
 require 'rainbow'
-require 'awesome_print'
 require 'progressbar'
 require 'getoptlong'
 
 opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
   [ '--version', '-v', GetoptLong::NO_ARGUMENT ],
-  [ '--ping', '-P', GetoptLong::NO_ARGUMENT],
-  [ '--flood', '-f', GetoptLong::REQUIRED_ARGUMENT],
   [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ],
-  [ '--host', '-H', GetoptLong::REQUIRED_ARGUMENT],
   [ '--domain', '-d', GetoptLong::REQUIRED_ARGUMENT],
-  [ '--port', '-p', GetoptLong::REQUIRED_ARGUMENT]
 )
 
-options = { :flood=> -1, :ping=>-1, :wordlist=>'basic.txt', :host=>nil, :port=>80, :domain=>nil }
+trap("INT") { puts '['+'INTERRUPTED'.color(:red)+']'; exit -1 }
+
+options = { :wordlist=>'basic.txt', :host=>nil, :port=>80, :domain=>nil }
 
 opts.each do |opt, arg|
   case opt
   when '--help'
-    ap "enchant: there is no doc at the moment... sorry."
+    help
     exit 0
   when '--version'
-    ap "enchant " + Enchant::Version.version[:string]
+    puts "enchant #{Enchant::Version::STRING}"
     exit 0
-  when '--flood'
-    if arg.to_i <= 0
-      ap "enchant: requests number must be positive"
-      exit 1
-    else
-      options[:flood] = arg.to_i
-    end
-  when '--ping'
-    options[:ping] = 0
-  when '--host'
-    options[:host] = arg
-  when '--port'
-    options[:port] = arg.to_i
   when '--wordlist'
     options[:wordlist] = arg
   when '--domain'
@@ -46,25 +30,27 @@ opts.each do |opt, arg|
   end
 end
 
-if options[:host].nil? && options[:domain].nil?
-  if ARGV.length != 1
-    ap "enchant: missing url argument (try --help)"
-    exit 0
-  end
-
-  url = ARGV.shift
-  e = Enchant::Engine.new(url)
-
-else
-  if options[:domain].nil?
-    e = Enchant::Engine.new
-    e.host = options[:host]
-    e.port = options[:port]
-  else
-    e = Enchant::Engine.new
-    e.domain = options[:domain]
-  end
+if ARGV.length != 1
+  puts "missing target".color(:red)
+  help
+  exit -1
 end
+
+url = ARGV.shift
+host = url.split(':')[0] ||= "localhost"    # fallback here should never occur... however it's better to be paranoid
+port = url.split(':')[1] ||= 80             # more common here
+
+
+puts "Fuzzing #{host}@#{port}"
+
+e = Enchant::Engine.new(url)
+
+e = Enchant::Engine.new
+e.host = options[:host]
+e.port = options[:port]
+
+    e = Enchant::Engine.new
+    # e.domain = options[:domain]
 
 if options[:flood] != -1
   if (! e.is_sane?)
@@ -152,7 +138,13 @@ list.each {|x|
   end
 }
 pbar.finish
-# puts e.server
-# 
+exit 0
 
 
+def help
+  puts "usage: enchant -wvhd target"
+  puts "    -p num: specify the web server port number"
+  puts "    -d domain: performs fuzzing to find subdomains"
+  puts "    -v"
+  puts "    -h"
+end

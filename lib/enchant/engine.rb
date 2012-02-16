@@ -1,32 +1,16 @@
 require 'net/http'
+require 'httpclient'
 require 'uri'
 
 module Enchant
-
   class Engine
     attr_reader :server, :code
     attr_accessor :host, :port, :domain
 
-    def initialize(*urls)
-      url = urls.pop || ""
-
-      if url != "" 
-        tmp = URI.parse(url)
-        @host = tmp.host
-        @port = tmp.port
-
-        if @host == nil && @port == nil
-          @sane = nil
-        else 
-          @sane = 1
-        end
-      else
-        @sane = 1
-      end
-    end
-
-    def is_sane?
-      @sane
+    def initialize(options={})
+      @host = options[:host]
+      @port = options[:port]
+      @wordlist = options[:wordlist]
     end
 
     def list(wordlist) 
