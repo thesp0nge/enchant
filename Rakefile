@@ -58,5 +58,5 @@ YARD::Rake::YardocTask.new
 
 desc "Rebuild VERSION file"
 task :version do
-  File.open('VERSION', 'w') {|f| f.write(Enchant::Version::STRING)}
+  File.open('VERSION', 'w') {|f| f.write(Enchant::Version.version)}
 end
