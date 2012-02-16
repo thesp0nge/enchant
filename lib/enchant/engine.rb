@@ -73,7 +73,12 @@ module Enchant
     end
 
     def up?
-      Net::HTTP.new(@host, @port).get('/').kind_of? Net::HTTPOK
+      begin
+        Net::HTTP.new(@host, @port).get('/')
+        return true
+      rescue Errno::ETIMEDOUT
+        return false
+      end
     end  
 
 

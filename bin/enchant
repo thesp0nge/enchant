@@ -44,10 +44,14 @@ puts "sending probes to #{options[:host]}@#{options[:port]}"
 
 e = Enchant::Engine.new(options)
 if ! e.up?
-  puts "#{host}@#{port} is down or unreachable".color(:red)
+  puts "#{options[:host]}@#{options[:port]} is down or unreachable".color(:red)
   exit 1
 end
-count = e.scan
 
-puts "#{count} urls open found".color(:green)
+
+start=Time.now
+count = e.scan
+stop=Time.now
+
+puts "#{count} urls open found in #{stop-start} secs".color(:green)
 exit 0
