@@ -36,6 +36,7 @@ module Enchant
         return 0
       end
 
+      refused=0
       @urls_open=[]
       @urls_internal_error=[]
       @urls_private=[]
@@ -57,6 +58,16 @@ module Enchant
             if c >= 500
               @urls_internal_error << path
             end
+          rescue  Errno::ECONNREFUSED
+            refused += 1
+            if refused > 5
+              pbar.finish
+              puts "received 5 connection refused. #{@host} is down".color(:red)
+              return @urls_open.count 
+            else
+              sleep 2
+            end
+            
           rescue Net::HTTPBadResponse
             if @verbose
               puts "#{$!}".color(:red)
