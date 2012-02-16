@@ -1,6 +1,7 @@
 require 'net/http'
 require 'httpclient'
 require 'uri'
+require 'progressbar'
 
 module Enchant
   class Engine
@@ -13,6 +14,13 @@ module Enchant
       @port = options[:port]
       @wordlist = options[:wordlist]
       @verbose = options[:verbose]
+    end
+    def self.help
+      puts "usage: enchant -wvhd target"
+      puts "    -p num: specify the web server port number"
+      puts "    -d domain: performs fuzzing to find subdomains"
+      puts "    -v"
+      puts "    -h"
     end
 
     
@@ -29,8 +37,11 @@ module Enchant
       @urls_internal_error={}
       @urls_private={}
 
+      
+      pbar = ProgressBar.new("urls", list.size)
       list.each do |path|
         begin
+          pbar.inc
           response = http.get(path)
           c = response.code
           if c == 200
@@ -51,8 +62,9 @@ module Enchant
             puts "#{$!}".color(:red)
           end
         end
-
       end
+      pbar.finish
+      @urls_open.count
     end
 
     def up?

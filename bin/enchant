@@ -1,15 +1,13 @@
 #!/usr/bin/env ruby
 require 'enchant'
 require 'rainbow'
-require 'progressbar'
 require 'getoptlong'
 
 opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
   [ '--version', '-v', GetoptLong::NO_ARGUMENT ],
   [ '--verbose', '-V', GetoptLong::NO_ARGUMENT ],
-  [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ],
-  [ '--domain', '-d', GetoptLong::REQUIRED_ARGUMENT],
+  [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ]
 )
 
 trap("INT") { puts '['+'INTERRUPTED'.color(:red)+']'; exit -1 }
@@ -19,7 +17,7 @@ options = { :verbose=>false, :wordlist=>'basic.txt', :host=>nil, :port=>80, :dom
 opts.each do |opt, arg|
   case opt
   when '--help'
-    help
+    Enchant::Enchant.help
     exit 0
   when '--verbose'
     options[:verbose]=true
@@ -28,14 +26,12 @@ opts.each do |opt, arg|
     exit 0
   when '--wordlist'
     options[:wordlist] = arg
-  when '--domain'
-    options[:domain] = arg
   end
 end
 
 if ARGV.length != 1
   puts "missing target".color(:red)
-  help
+  Enchant::Enchant.help
   exit -1
 end
 
@@ -44,103 +40,10 @@ host = url.split(':')[0] ||= "localhost"    # fallback here should never occur..
 port = url.split(':')[1] ||= 80             # more common here
 
 
-puts "Fuzzing #{host}@#{port}"
+puts "sending probes to #{host}@#{port}"
 
 e = Enchant::Engine.new(options)
+count = e.scan
 
-if options[:flood] != -1
-  if (! e.is_sane?)
-    puts 'Automatic url parsing failed, please consider providing such information by hand.'
-    exit 1
-  end
-  puts "Flooding "+e.host+" with #{options[:flood]} requests"
-
-  pbar = ProgressBar.new("reqs", options[:flood])
-  start_time = Time.now
-  (1..options[:flood]).each do |i|
-    pbar.inc
-    e.get('/')
-  end
-  puts
-  puts "flooed in " + (Time.now - start_time).to_s + "s"
-  exit 0
-end
-
-if options[:ping] != -1
-  if (! e.is_sane?)
-    puts 'Automatic url parsing failed, please consider providing such information by hand.'
-    exit 1
-  end
-  puts "Pinging "+e.host+" onto port " + e.port.to_s
-
-  start_time = Time.now
-  e.get("/")
-  if e.up?
-    puts e.host + " seems to be alive"
-  else
-    puts e.host + " seems having some trouble ("+e.code+")"
-  end
-  puts
-  puts "pinged in " + (Time.now - start_time).to_s + "s"
-  exit 0
-end
-
-if !options[:domain].nil?
-  if (! e.is_sane?)
-    puts 'Automatic url parsing failed, please consider providing such information by hand.'
-    exit 1
-  end
-  puts "scanning for " + e.domain + " for subdomains"
-  e.list(wordlist)
-  list = e.fuzz
-
-  if list == nil
-    puts "Enchant is giving up since no wordlist file is available"
-    exit -1
-  end
-  pbar = ProgressBar.new("subdomains", list.size)
-  found=Array.new
-  list.each {|x|
-    pbar.inc
-    if (e.ping?(x.chomp+"."+domain))
-      found.add(x+"."+domain)
-    end
-  }
-  puts found.length+" subdomains found."
-  exit 0
-end
-
-puts "Sending probe to #{url}"
-e.list(options[:wordlist])
-list = e.fuzz()
-if list == nil
-  puts "Enchant is giving up since no wordlist file is available"
-  exit -1
-end
-
-pbar = ProgressBar.new("urls", list.size)
-
-list.each {|x|
-  pbar.inc
-  code = e.get("/".concat(x).chomp)
-  unless code != 404
-    case code
-      # just hide 404s... when "404" then puts "Status is #{code} for /#{x.chomp}".foreground(:yellow)
-    when "200" then puts "Status is #{code} for /#{x.chomp}".foreground(:green)
-    when "500" then puts "Status is #{code} for /#{x.chomp}".foreground(:red)
-    else 
-      puts "Status is #{code} for /#{x.chomp}"
-    end
-  end
-}
-pbar.finish
+puts "#{count} urls open found".color(:green)
 exit 0
-
-
-def help
-  puts "usage: enchant -wvhd target"
-  puts "    -p num: specify the web server port number"
-  puts "    -d domain: performs fuzzing to find subdomains"
-  puts "    -v"
-  puts "    -h"
-end
