@@ -21,7 +21,7 @@ opts.each do |opt, arg|
     help
     exit 0
   when '--version'
-    puts "enchant #{Enchant::Version::STRING}"
+    puts "enchant #{Enchant::Version.version}"
     exit 0
   when '--wordlist'
     options[:wordlist] = arg

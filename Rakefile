@@ -31,7 +31,7 @@ Jeweler::Tasks.new do |gem|
   gem.default_executable = 'enchant'
   gem.require_path = 'lib'
   gem.license = "BSD"
-  gem.version = Enchant::Version::STRING
+  gem.version = Enchant::Version.version
 
   gem.summary = %Q{evaluates web server SSL configuration}
   gem.description = %Q{ciphersurfer is a security tool that evaluates web server SSL configuration}
