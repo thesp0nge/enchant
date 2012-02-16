@@ -32,6 +32,9 @@ module Enchant
     def scan
       http = Net::HTTP.new(@host, @port)
       list = get_list
+      if list.empty?
+        return 0
+      end
 
       @urls_open={}
       @urls_internal_error={}
@@ -79,8 +82,8 @@ module Enchant
           @list = f.readlines
         }
       rescue Errno::ENOENT
-        puts "it seems the wordlist file is not present (#{wordlist})".color(:red)
-        @list = nil
+        puts "it seems the wordlist file is not present (#{@wordlist})".color(:red)
+        @list = {}
       end
     end
 
