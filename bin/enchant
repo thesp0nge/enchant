@@ -7,19 +7,22 @@ require 'getoptlong'
 opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
   [ '--version', '-v', GetoptLong::NO_ARGUMENT ],
+  [ '--verbose', '-V', GetoptLong::NO_ARGUMENT ],
   [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ],
   [ '--domain', '-d', GetoptLong::REQUIRED_ARGUMENT],
 )
 
 trap("INT") { puts '['+'INTERRUPTED'.color(:red)+']'; exit -1 }
 
-options = { :wordlist=>'basic.txt', :host=>nil, :port=>80, :domain=>nil }
+options = { :verbose=>false, :wordlist=>'basic.txt', :host=>nil, :port=>80, :domain=>nil }
 
 opts.each do |opt, arg|
   case opt
   when '--help'
     help
     exit 0
+  when '--verbose'
+    options[:verbose]=true
   when '--version'
     puts "enchant #{Enchant::Version.version}"
     exit 0

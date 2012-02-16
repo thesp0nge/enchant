@@ -13,9 +13,9 @@ module Enchant
       @wordlist = options[:wordlist]
     end
 
-    def list(wordlist) 
+    def get_list
       begin
-        File.open(wordlist, 'r') { |f|
+        File.open(@wordlist, 'r') { |f|
           @list = f.readlines
         }
       rescue Errno::ENOENT
@@ -29,7 +29,7 @@ module Enchant
       @list
     end
 
-    def get(path)
+    def scan
       http = Net::HTTP.new(host, port)
       begin
         response = http.get(path)
