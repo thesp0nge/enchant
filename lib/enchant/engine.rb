@@ -16,11 +16,11 @@ module Enchant
       @verbose = options[:verbose]
     end
     def self.help
-      puts "usage: enchant -wvhd target"
-      puts "    -p num: specify the web server port number"
-      puts "    -d domain: performs fuzzing to find subdomains"
-      puts "    -v"
-      puts "    -h"
+      puts "usage: enchant -wVvh target"
+      puts "       -w file: specifiy the text file to be used as dictionary"
+      puts "       -V: be verbose"
+      puts "       -v: shows version"
+      puts "       -h: this help"
     end
 
     
