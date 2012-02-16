@@ -12,7 +12,7 @@ module Enchant
     def initialize(options={})
       @host = options[:host]
       @port = options[:port]
-      @wordlist = options[:wordlist]
+      @wordlist = options[:wordlist] 
       @verbose = options[:verbose]
     end
     def self.help
@@ -43,26 +43,29 @@ module Enchant
       
       pbar = ProgressBar.new("urls", list.size)
       list.each do |path|
-        begin
-          pbar.inc
-          response = http.get(path)
-          c = response.code
-          if c == 200
-            @urls_open << path
-          end
-          if c == 401
-            @urls_private << path
-          end
-          if c >= 500
-            @urls_internal_error << path
-          end
-        rescue Net::HTTPBadResponse
-          if @verbose
-            puts "#{$!}".color(:red)
-          end
-        rescue Errno::ETIMEDOUT
-          if @verbose
-            puts "#{$!}".color(:red)
+        pbar.inc
+        puts "#{path}".color(:yellow)
+        if ! list.start_with? '#'
+          begin
+            response = http.get('/'+path)
+            c = response.code
+            if c == 200
+              @urls_open << path
+            end
+            if c == 401
+              @urls_private << path
+            end
+            if c >= 500
+              @urls_internal_error << path
+            end
+          rescue Net::HTTPBadResponse
+            if @verbose
+              puts "#{$!}".color(:red)
+            end
+          rescue Errno::ETIMEDOUT
+            if @verbose
+              puts "#{$!}".color(:red)
+            end
           end
         end
       end
@@ -71,12 +74,23 @@ module Enchant
     end
 
     def up?
-      Net::HTTP.new(@host, @port).head('/').kind_of? Net::HTTPOK
+      Net::HTTP.new(@host, @port).get('/').kind_of? Net::HTTPOK
     end  
 
 
     private
     def get_list
+
+      if @wordlist.nil?
+        if File.exists?('../../db/directory-list-2.3-small.txt')
+          @wordlist='../../db/directory-list-2.3-small.txt'
+        end
+        if File.exists?('./db/directory-list-2.3-small.txt')
+          @wordlist='./db/directory-list-2.3-small.txt'
+        end
+
+      end
+
       begin
         File.open(@wordlist, 'r') { |f|
           @list = f.readlines

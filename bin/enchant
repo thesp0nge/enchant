@@ -12,7 +12,7 @@ opts = GetoptLong.new(
 
 trap("INT") { puts '['+'INTERRUPTED'.color(:red)+']'; exit -1 }
 
-options = { :verbose=>false, :wordlist=>'basic.txt', :host=>nil, :port=>80, :domain=>nil }
+options = { :verbose=>false, :wordlist=>nil, :host=>nil, :port=>80, :domain=>nil }
 
 opts.each do |opt, arg|
   case opt
@@ -36,13 +36,17 @@ if ARGV.length != 1
 end
 
 url = ARGV.shift
-host = url.split(':')[0] ||= "localhost"    # fallback here should never occur... however it's better to be paranoid
-port = url.split(':')[1] ||= 80             # more common here
+options[:host]= url.split(':')[0] ||= "localhost"    # fallback here should never occur... however it's better to be paranoid
+options[:port] = url.split(':')[1] ||= 80             # more common here
 
 
-puts "sending probes to #{host}@#{port}"
+puts "sending probes to #{options[:host]}@#{options[:port]}"
 
 e = Enchant::Engine.new(options)
+if ! e.up?
+  puts "#{host}@#{port} is down or unreachable".color(:red)
+  exit 1
+end
 count = e.scan
 
 puts "#{count} urls open found".color(:green)
