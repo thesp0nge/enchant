@@ -86,6 +86,8 @@ module Enchant
         end
         if File.exists?('./db/directory-list-2.3-small.txt')
           @wordlist='./db/directory-list-2.3-small.txt'
+        else
+          @list = {}
         end
 
       end
