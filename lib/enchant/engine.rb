@@ -49,6 +49,7 @@ module Enchant
           begin
             response = http.get('/'+path.chop)
             c = response.code.to_i
+            refused = 0
             if c == 200
               @urls_open << path
             end
@@ -69,10 +70,12 @@ module Enchant
             end
             
           rescue Net::HTTPBadResponse
+            refused = 0
             if @verbose
               puts "#{$!}".color(:red)
             end
           rescue Errno::ETIMEDOUT
+            refused = 0
             if @verbose
               puts "#{$!}".color(:red)
             end
