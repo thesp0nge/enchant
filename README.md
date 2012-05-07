@@ -2,8 +2,8 @@
 
 ## Introdution
 
-enchant is is tool aimed to discover web application directory and pages by fuzzing the requests using a
-dictionary approach.
+enchant is is tool aimed to discover web application directory and pages by
+fuzzing the requests using a dictionary approach.
 
 The purpose is for security guys to discover a web application exposed paths without knowing anything about
 the app they have to test.
