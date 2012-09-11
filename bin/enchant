@@ -54,4 +54,10 @@ count = e.scan
 stop=Time.now
 
 puts "#{count} urls open found in #{stop-start} secs".color(:green)
+
+e.urls_open.each do |u|
+  puts u
+
+end
+
 exit 0
