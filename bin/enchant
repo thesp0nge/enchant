@@ -56,7 +56,7 @@ stop=Time.now
 puts "#{count} urls open found in #{stop-start} secs".color(:green)
 
 e.urls_open.each do |u|
-  puts u
+  puts "#{u[:path].chomp} ( #{u[:code]} )"
 end
 
 exit 0

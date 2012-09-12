@@ -58,7 +58,7 @@ module Enchant
             c = response.code.to_i
             refused = 0
             if c == 200 or c == 302
-              @urls_open << path
+              @urls_open << {:path=>path, :code=>c}
             end
             if c == 401
               @urls_private << path

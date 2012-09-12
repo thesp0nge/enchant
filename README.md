@@ -1,5 +1,12 @@
 # enchant
 
+## README
+
+As far as today (20120912) enchant project it will be stopped and all the
+features will be covered by [links](https://github.com/thesp0nge/links) project
+I wrote to automate robots.txt scan.
+
+
 ## Introdution
 
 enchant is is tool aimed to discover web application directory and pages by fuzzing the requests using a
