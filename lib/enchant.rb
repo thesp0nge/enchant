@@ -1,3 +1,3 @@
-require 'enchant/version'
-require 'enchant/engine'
+require "enchant/version"
+require "enchant/engine"
 

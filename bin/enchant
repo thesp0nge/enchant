@@ -1,16 +1,22 @@
 #!/usr/bin/env ruby
 require 'enchant'
-require 'rainbow'
+require 'logger'
+require 'logger-colors'
 require 'getoptlong'
+
+
+$logger = Logger.new(STDOUT)
+$logger.datetime_format = '%Y-%m-%d %H:%M:%S'
 
 opts = GetoptLong.new(
   [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
   [ '--version', '-v', GetoptLong::NO_ARGUMENT ],
   [ '--verbose', '-V', GetoptLong::NO_ARGUMENT ],
+  [ '--dirbuster', '-D', GetoptLong::NO_ARGUMENT ],
   [ '--wordlist', '-w', GetoptLong::REQUIRED_ARGUMENT ]
 )
 
-trap("INT") { puts '['+'INTERRUPTED'.color(:red)+']'; exit -1 }
+trap("INT") { $logger.error 'INTERRUPTED'; Kernel.exit -99 }
 
 options = { :verbose=>false, :wordlist=>nil, :host=>nil, :port=>80, :domain=>nil }
 
@@ -22,15 +28,17 @@ opts.each do |opt, arg|
   when '--verbose'
     options[:verbose]=true
   when '--version'
-    puts "enchant #{Enchant::Version.version}"
+    puts "enchant #{Enchant.version}"
     exit 0
+  when '--dirbuster'
+    options[:wordlist] = :dirbuster
   when '--wordlist'
     options[:wordlist] = arg
   end
 end
 
 if ARGV.length != 1
-  puts "missing target".color(:red)
+  $logger.error "missing target"
   Enchant::Engine.help
   exit -1
 end
@@ -40,12 +48,12 @@ options[:host]= url.split(':')[0] ||= "localhost"    # fallback here should neve
 options[:port] = url.split(':')[1] ||= 80             # more common here
 
 
-puts "sending probes to #{options[:host]}@#{options[:port]}"
+$logger.info "sending probes to #{options[:host]}@#{options[:port]}"
 
 e = Enchant::Engine.new(options)
 if ! e.up?
-  puts "#{options[:host]}@#{options[:port]} is down or unreachable".color(:red)
-  exit 1
+  $logger.error "#{options[:host]}@#{options[:port]} is down or unreachable"
+  Kernel.exit -2
 end
 
 
@@ -53,5 +61,5 @@ start=Time.now
 count = e.scan
 stop=Time.now
 
-puts "#{count} urls open found in #{stop-start} secs".color(:green)
-exit 0
+$logger.info "#{count} urls open found in #{stop-start} secs".color(:green)
+Kernel.exit 0

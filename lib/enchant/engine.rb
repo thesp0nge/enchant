@@ -15,6 +15,7 @@ module Enchant
       @wordlist = options[:wordlist] 
       @verbose = options[:verbose]
     end
+
     def self.help
       puts "usage: enchant -wVvh target"
       puts "       -w file: specifiy the text file to be used as dictionary"
@@ -23,7 +24,6 @@ module Enchant
       puts "       -h: this help"
     end
 
-    
     def fuzz(*) 
       # in future some perturbation will be done here
       get_list
@@ -100,9 +100,23 @@ module Enchant
 
 
     private
+    def load_dirbuster_wordlist
+      LD_PATH=['./db', '/usr/local/enchant/db', '/usr/local/share', '.']
+      LD_PATH.each do |path|
+        name = File.join(path, "directory-list-2.3-medium.txt")
+        if File.exists?(name)
+          $logger.warn "using #{name} as wordlist"
+          return name
+        end
+      end
+    end
     def get_list
 
       if @wordlist.nil?
+        # Owasp checklist used as default
+      end
+
+      if @wordlist == :dirbuster
         if File.exists?('../../db/directory-list-2.3-small.txt')
           @wordlist='../../db/directory-list-2.3-small.txt'
         end

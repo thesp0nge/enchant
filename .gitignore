@@ -1,6 +1,9 @@
-*.gemspec
-.autotest
-doc/*
-pkg/
-.rvmrc
-*.swp
+/.bundle/
+/.yardoc
+/Gemfile.lock
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
