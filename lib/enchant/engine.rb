@@ -1,5 +1,6 @@
 require 'net/http'
-require 'httpclient'
+require 'net/https'
+# require 'httpclient'
 require 'uri'
 require 'progressbar'
 
@@ -31,6 +32,12 @@ module Enchant
 
     def scan
       http = Net::HTTP.new(@host, @port)
+
+      if @port == "443"
+        http.use_ssl = true
+        http.ssl_timeout = 2
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
       list = get_list
       if list.empty?
         return 0
@@ -50,8 +57,8 @@ module Enchant
             response = http.get('/'+path.chop)
             c = response.code.to_i
             refused = 0
-            if c == 200
-              @urls_open << path
+            if c == 200 or c == 302
+              @urls_open << {:path=>path, :code=>c}
             end
             if c == 401
               @urls_private << path
@@ -59,7 +66,7 @@ module Enchant
             if c >= 500
               @urls_internal_error << path
             end
-          rescue  Errno::ECONNREFUSED
+          rescue Errno::ECONNREFUSED
             refused += 1
             if refused > 5
               pbar.finish
@@ -90,6 +97,8 @@ module Enchant
     def up?
       begin
         Net::HTTP.new(@host, @port).get('/')
+        return true
+      rescue Net::HTTPBadResponse
         return true
       rescue Errno::ECONNREFUSED
         return false

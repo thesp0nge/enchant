@@ -62,4 +62,9 @@ count = e.scan
 stop=Time.now
 
 $logger.info "#{count} urls open found in #{stop-start} secs".color(:green)
+
+e.urls_open.each do |u|
+  $logger.info "#{u[:path].chomp} ( #{u[:code]} )"
+end
+
 Kernel.exit 0
